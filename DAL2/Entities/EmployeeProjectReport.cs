@@ -13,7 +13,7 @@ namespace DAL2.Entities
         public string FullName { get; set; }
         public string SpecialtyName { get; set; }
         public string DepartmentName { get; set; }
-        public string ProjectCode { get; set; }      // New
+        public int ProjectCode { get; set; }      // New
         public string ParticipationStatus { get; set; } // New
     }
 }

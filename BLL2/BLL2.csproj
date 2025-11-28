@@ -67,6 +67,7 @@
     <Compile Include="Services\EmployeeSpecialtyService.cs" />
     <Compile Include="Services\EmpTransfer.cs" />
     <Compile Include="Services\ReportService.cs" />
+    <Compile Include="Services\ReportServiceForLab4.cs" />
     <Compile Include="Services\SpecialtyService.cs" />
   </ItemGroup>
   <ItemGroup>

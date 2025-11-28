@@ -56,6 +56,8 @@
     <Compile Include="Entities\department.cs" />
     <Compile Include="Entities\employee.cs" />
     <Compile Include="Entities\EmployeeProjectReport.cs" />
+    <Compile Include="Interfaces\IReportsRepository.cs" />
+    <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Model1.cs" />
     <Compile Include="Entities\participation.cs" />
     <Compile Include="Entities\project.cs" />
