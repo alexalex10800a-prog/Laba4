@@ -56,6 +56,7 @@
     <Compile Include="models\departmentDTO.cs" />
     <Compile Include="models\DepartmentStatsDTO.cs" />
     <Compile Include="models\employeeDTO.cs" />
+    <Compile Include="models\EmployeeProjectsDTO.cs" />
     <Compile Include="models\EmployeeTransferDTO.cs" />
     <Compile Include="models\participationDTO.cs" />
     <Compile Include="models\projectDTO.cs" />

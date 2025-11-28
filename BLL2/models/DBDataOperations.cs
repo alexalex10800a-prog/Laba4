@@ -197,7 +197,14 @@ namespace BLL2
                     new SqlParameter("@DepartmentId", departmentId))
                 .ToList();
         }
-
+        public List<EmployeeProjectsDTO> GetEmployeesWithProjectsByDepartment(int departmentId)
+        {
+            return _context.Database
+                .SqlQuery<EmployeeProjectsDTO>(
+                    "EXEC mydb.GetEmployeesWithProjectsByDepartment @DepartmentId",
+                    new SqlParameter("@DepartmentId", departmentId))
+                .ToList();
+        }
         // Also add a method to get departments for the combobox
         public List<DepartmentDTO> GetAllDepartments1()
         {
