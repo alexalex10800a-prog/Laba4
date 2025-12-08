@@ -37,6 +37,9 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="Ninject, Version=3.3.6.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.3.3.6\lib\net45\Ninject.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -49,6 +52,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
+    <Compile Include="Interface\IDbCrud.cs" />
+    <Compile Include="Interface\IReportService.cs" />
     <Compile Include="models\AssignmentDTO.cs" />
     <Compile Include="models\AssignmentResultDTO.cs" />
     <Compile Include="models\contractDTO.cs" />
@@ -56,6 +61,7 @@
     <Compile Include="models\departmentDTO.cs" />
     <Compile Include="models\DepartmentStatsDTO.cs" />
     <Compile Include="models\employeeDTO.cs" />
+    <Compile Include="models\EmployeeProjectReport.cs" />
     <Compile Include="models\EmployeeProjectsDTO.cs" />
     <Compile Include="models\EmployeeTransferDTO.cs" />
     <Compile Include="models\participationDTO.cs" />
@@ -69,6 +75,7 @@
     <Compile Include="Services\ReportService.cs" />
     <Compile Include="Services\ReportServiceForLab4.cs" />
     <Compile Include="Services\SpecialtyService.cs" />
+    <Compile Include="Util\ServiceModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -80,6 +87,8 @@
       <Name>DAL2</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Inter\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

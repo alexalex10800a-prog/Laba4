@@ -9,7 +9,7 @@ namespace DAL2.Interfaces
 {
     public interface IRepository<T> where T : class
     {
-        ObservableCollection<T> GetList();
+        List<T> GetList();
         T GetItem(int id);
         void Create(T item);
         void Update(T item);

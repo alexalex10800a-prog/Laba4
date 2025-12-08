@@ -1,11 +1,14 @@
 ﻿using BLL2.models;
 using BLL2.Services;
+using BLL2.Interface;
 using DAL2;
+using DAL2.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,73 +16,72 @@ using System.Threading.Tasks;
 namespace BLL2
 {
     // BLL/DBDataOperations.cs
-    public class DBDataOperations
+    public class DBDataOperations : IDbCrud
     {
-        private Model1 _context;
+        private IDbRepos _db;
 
-        public DBDataOperations()
+        public DBDataOperations(IDbRepos repos)
         {
-            _context = new Model1();
-            _context.employees.Load();
+            _db = repos;
         }
+
         public bool HasEmployeesWithSpecialty(int specialtyId)
         {
-            return _context.employees.Any(e => e.specialty_code_FK1 == specialtyId);
+            return _db.Employees.GetList().Any(e => e.specialty_code_FK1 == specialtyId);
         }
+
         public bool Save()
         {
             try
             {
-                // Check if there are any changes first
-                if (!_context.ChangeTracker.HasChanges())
-                {
-                    // No changes to save - this is NOT an error!
-                    return true; // ← CHANGE THIS from false to true
-                }
-
-                int recordsAffected = _context.SaveChanges();
-
-                // SaveChanges() returns 0 when no changes were made
-                // This is SUCCESS, not failure!
-                return true; // ← ALWAYS return true if no exception occurred
+                // With repository pattern, we don't have ChangeTracker
+                // Just attempt to save and handle exceptions
+                int recordsAffected = _db.Save();
+                return true; // Success if no exception
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Save error: {ex.Message}");
-                return false; // ← Only return false on actual errors
+                return false;
             }
         }
+
         public void UpdateEmployee(EmployeeDTO emp)
         {
-            employee e = _context.employees.Find(emp.ID);
-            e.full_name = emp.FullName;
-            e.specialty_code_FK1 = emp.SpecialtyCode;
-            e.department_code_FK2 = emp.DepartmentCode;
-
-            Save();
-        }
-        public void DeleteEmployee(int id)
-        {
-            employee emp = _context.employees.Find(id);
-            if (emp != null)
+            employee e = _db.Employees.GetItem(emp.ID);
+            if (e != null)
             {
-                _context.employees.Remove(emp);
+                e.full_name = emp.FullName;
+                e.specialty_code_FK1 = emp.SpecialtyCode;
+                e.department_code_FK2 = emp.DepartmentCode;
+                _db.Employees.Update(e);
                 Save();
             }
         }
+
+        public void DeleteEmployee(int id)
+        {
+            employee emp = _db.Employees.GetItem(id);
+            if (emp != null)
+            {
+                _db.Employees.Delete(id);
+                Save();
+            }
+        }
+
         public BusinessResult CreateEmployee(EmployeeDTO e)
         {
             try
             {
                 // BUSINESS RULE: Check if department already has 3 employees with this specialty
-                var sameSpecialtyCount = _context.employees
+                var sameSpecialtyCount = _db.Employees.GetList()
                     .Count(emp => emp.department_code_FK2 == e.DepartmentCode
                                && emp.specialty_code_FK1 == e.SpecialtyCode);
 
                 if (sameSpecialtyCount >= 3)
                 {
-                    var department = _context.departments.Find(e.DepartmentCode);
-                    var specialty = _context.specialties.Find(e.SpecialtyCode);
+                    var department = _db.Departments.GetItem(e.DepartmentCode);
+                    var specialty = _db.Specialties.GetItem(e.SpecialtyCode);
 
                     return BusinessResult.Fail(
                         $"Отдел '{department.department_name}' уже имеет {sameSpecialtyCount} сотрудников " +
@@ -87,7 +89,7 @@ namespace BLL2
                 }
 
                 // If rule passes, create the employee
-                _context.employees.Add(new employee()
+                _db.Employees.Create(new employee()
                 {
                     full_name = e.FullName,
                     specialty_code_FK1 = e.SpecialtyCode,
@@ -106,78 +108,50 @@ namespace BLL2
                 return BusinessResult.Fail($"Ошибка системы: {ex.Message}");
             }
         }
+
         public List<EmployeeDTO> GetAllEmployees()
         {
-            return _context.employees.ToList().Select(i => new EmployeeDTO(i)).ToList();
+            return _db.Employees.GetList().Select(i => new EmployeeDTO(i)).ToList();
         }
 
         public void UpdateSpecialty(SpecialtyDTO sp)
         {
-            specialty s = _context.specialties.Find(sp.ID);
-            s.specialty_name = sp.SpecialtyName;
-            
-            Save();
-        }
-        public void DeleteSpecialty(int id)
-        {
-            specialty sp = _context.specialties.Find(id);
-            if (sp != null)
+            specialty s = _db.Specialties.GetItem(sp.ID);
+            if (s != null)
             {
-                _context.specialties.Remove(sp);
+                s.specialty_name = sp.SpecialtyName;
+                _db.Specialties.Update(s);
                 Save();
             }
         }
-        public void CreateSpecialty(SpecialtyDTO e)
+
+        public void DeleteSpecialty(int id)
         {
-            _context.specialties.Add(new specialty() { specialty_name = e.SpecialtyName });
-            Save();
-            //db.Phones.Attach(p);
+            specialty sp = _db.Specialties.GetItem(id);
+            if (sp != null)
+            {
+                _db.Specialties.Delete(id);
+                Save();
+            }
         }
 
-        /* public List<OrderModel> GetAllOrders()
-         {
-             return db.Orders.ToList().Select(i => new OrderModel(i)).ToList();
-         }
+        public void CreateSpecialty(SpecialtyDTO e)
+        {
+            _db.Specialties.Create(new specialty() { specialty_name = e.SpecialtyName });
+            Save();
+        }
 
-         public PhoneModel GetPhone(int Id)
-         {
-             return new PhoneModel(db.Phones.Find(Id));
-         }
-
-         
-
-         public void UpdatePhone(PhoneModel p)
-         {
-             Phone ph = db.Phones.Find(p.Id);
-             ph.Name = p.Name;
-             ph.Cost = p.Cost;
-             ph.Description = p.Description;
-             ph.ManufacturerId = p.ManufacturerId;
-             Save();
-         }
-
-         public void DeletePhone(int id)
-         {
-             Phone p = db.Phones.Find(id);
-             if (p != null)
-             {
-                 db.Phones.Remove(p);
-                 Save();
-             }
-         }
-
-
-         public bool Save()
-         {
-             if (db.SaveChanges() > 0) return true;
-             return false;
-         }
-        */
         public List<DepartmentStatsDto> GetDepartmentStats()
         {
-            var query = from e in _context.employees
-                        join d in _context.departments on e.department_code_FK2 equals d.department_code
-                        join c in _context.contracts on e.employee_id equals c.leader_code_FK
+            // This one is complex - you might need to keep using the context directly
+            // or create a specialized repository method
+            var employees = _db.Employees.GetList();
+            var departments = _db.Departments.GetList();
+            var contracts = _db.Contracts.GetList();
+
+            var query = from e in employees
+                        join d in departments on e.department_code_FK2 equals d.department_code
+                        join c in contracts on e.employee_id equals c.leader_code_FK
                         where c.cost > 10000
                         group new { e, c } by d.department_name into g
                         select new DepartmentStatsDto
@@ -189,26 +163,34 @@ namespace BLL2
 
             return query.ToList();
         }
+
         public List<EmployeeDTO> GetEmployeesByDepartment(int departmentId)
         {
-            return _context.Database
-                .SqlQuery<EmployeeDTO>(
-                    "EXEC mydb.GetEmployeesByDepartment @DepartmentId",
-                    new SqlParameter("@DepartmentId", departmentId))
+            // Use repository instead of stored procedure
+            return _db.Employees.GetList()
+                .Where(e => e.department_code_FK2 == departmentId)
+                .Select(e => new EmployeeDTO(e))
                 .ToList();
         }
+
         public List<EmployeeProjectsDTO> GetEmployeesWithProjectsByDepartment(int departmentId)
         {
-            return _context.Database
-                .SqlQuery<EmployeeProjectsDTO>(
-                    "EXEC mydb.GetEmployeesWithProjectsByDepartment @DepartmentId",
-                    new SqlParameter("@DepartmentId", departmentId))
-                .ToList();
+            // This will work once Reports repository is implemented
+            var reportData = _db.Reports.GetEmployeesWithProjectsByDepartment(departmentId);
+            return reportData.Select(i => new EmployeeProjectsDTO
+            {
+                EmployeeId = i.EmployeeId,
+                FullName = i.FullName,
+                DepartmentName = i.DepartmentName,
+                SpecialtyName = i.SpecialtyName,
+                ProjectCode = i.ProjectCode,
+                ParticipationStatus = i.ParticipationStatus
+            }).ToList();
         }
-        // Also add a method to get departments for the combobox
+
         public List<DepartmentDTO> GetAllDepartments1()
         {
-            return _context.departments
+            return _db.Departments.GetList()
                 .Select(d => new DepartmentDTO
                 {
                     ID = d.department_code,
@@ -216,31 +198,35 @@ namespace BLL2
                 })
                 .ToList();
         }
-        // In DBDataOperations.cs
+
         public EmployeeDTO GetEmployeeById(int employeeId)
         {
-            return _context.employees
-                .Where(e => e.employee_id == employeeId)
-                .Include(e => e.specialty)
-                .Include(e => e.department)
-                .Select(e => new EmployeeDTO
-                {
-                    ID = e.employee_id,
-                    FullName = e.full_name,
-                    SpecialtyCode = e.specialty_code_FK1,
-                    SpecialtyName = e.specialty.specialty_name,
-                    DepartmentCode = e.department_code_FK2,  // Fixed property name
-                    DepartmentName = e.department.department_name
-                })
-                .FirstOrDefault();
+            var employee = _db.Employees.GetItem(employeeId);
+            if (employee == null) return null;
+
+            // With repositories, you might need to load related entities manually
+            var specialty = _db.Specialties.GetItem(employee.specialty_code_FK1);
+            var department = _db.Departments.GetItem(employee.department_code_FK2);
+
+            return new EmployeeDTO
+            {
+                ID = employee.employee_id,
+                FullName = employee.full_name,
+                SpecialtyCode = employee.specialty_code_FK1,
+                SpecialtyName = specialty?.specialty_name,
+                DepartmentCode = employee.department_code_FK2,
+                DepartmentName = department?.department_name
+            };
         }
+
         public List<SpecialtyDTO> GetAllSpecialties()
         {
-            return _context.specialties.ToList().Select(i => new SpecialtyDTO(i)).ToList();
+            return _db.Specialties.GetList().Select(i => new SpecialtyDTO(i)).ToList();
         }
+
         public List<DepartmentDTO> GetAllDepartments()
         {
-            return _context.departments.ToList().Select(a => new DepartmentDTO(a)).ToList();
+            return _db.Departments.GetList().Select(a => new DepartmentDTO(a)).ToList();
         }
     }
 }

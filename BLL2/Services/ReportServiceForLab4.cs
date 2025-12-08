@@ -1,41 +1,44 @@
 ﻿using BLL2.models;
-using DAL2.Entities;
-using System;
+using BLL2.Interface;
 using DAL2;
+using DAL2.Entities;
+using DAL2.Interfaces;
+using System;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace BLL2.Services
 {
-    public class ReportServiceForLab4
+    public class ReportServiceForLab4 : IReportService
     {
+        private IDbRepos _db;
+
+        // Constructor injection
+        public ReportServiceForLab4(IDbRepos repos)
+        {
+            _db = repos;
+        }
+
         // Your report data structure (like OrdersByMonth in the example)
-        public class EmployeeProjectsResult
+
+        // Execute stored procedure through repository
+        public List<EmployeeProjectsResult> GetEmployeesWithProjectsByDepartment(int departmentId)
         {
-            public int EmployeeId { get; set; }
-            public string FullName { get; set; }
-            public string DepartmentName { get; set; }
-            public string SpecialtyName { get; set; }
-            public int ProjectCode { get; set; }
-            public string ParticipationStatus { get; set; }
+            // Use the Reports repository instead of creating DbContext directly
+            var reportData = _db.Reports.GetEmployeesWithProjectsByDepartment(departmentId);
+
+            // Convert from DAL report entity to service result
+            return reportData.Select(r => new EmployeeProjectsResult
+            {
+                EmployeeId = r.EmployeeId,
+                FullName = r.FullName,
+                DepartmentName = r.DepartmentName,
+                SpecialtyName = r.SpecialtyName,
+                ProjectCode = r.ProjectCode,
+                ParticipationStatus = r.ParticipationStatus
+            }).ToList();
         }
-
-        // Execute stored procedure (like ExecuteSP in the example)
-        public static List<EmployeeProjectsResult> GetEmployeesWithProjectsByDepartment(int departmentId)
-        {
-            // Create DbContext internally (like PhonesDB in the example)
-            Model1 db = new Model1();
-
-            // Call stored procedure directly
-            var result = db.Database.SqlQuery<EmployeeProjectsResult>(
-                "EXEC mydb.GetEmployeesWithProjectsByDepartment @DepartmentId",
-                new SqlParameter("@DepartmentId", departmentId))
-                .ToList();
-
-            return result;
-        }
-
     }
 }
