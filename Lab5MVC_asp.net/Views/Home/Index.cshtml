@@ -1,0 +1,25 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<main>
+    <div class="page-header">
+        <h1>Добро пожаловать в систему управления кадрами</h1>
+    </div>
+
+    <div class="alert alert-info">
+        <strong>Возможности системы:</strong>
+        <ul>
+            <li>Ведение базы сотрудников с полной историей</li>
+            <li>Управление организационной структурой компании</li>
+            <li>Планирование и контроль проектов</li>
+            <li>Учет договоров и финансовых документов</li>
+            <li>Анализ загрузки персонала по проектам</li>
+        </ul>
+    </div>
+
+    <h3>Доступные разделы:</h3>
+    <div class="list-group">
+        @Html.ActionLink("Сотрудники", "Index", "Employees", null, new { @class = "list-group-item" })
+    </div>
+</main>
