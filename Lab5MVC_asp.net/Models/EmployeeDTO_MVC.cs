@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Web;
 using BLL2;
@@ -10,11 +11,14 @@ namespace Lab5MVC_asp.net.Models
     public class EmployeeDTO_MVC
     {
         public int ID { get; set; }
+        [DisplayName("ФИО")]
         public string FullName { get; set; }
         public int SpecialtyCode { get; set; }
         public int DepartmentCode { get; set; }
 
+        [DisplayName("Отдел")]
         public string DepartmentName { get; set; }
+        [DisplayName("Специальность")]
         public string SpecialtyName { get; set; }
         public List<DepartmentDTO> Department { get; set; }
         public List<SpecialtyDTO> Specialty { get; set; }

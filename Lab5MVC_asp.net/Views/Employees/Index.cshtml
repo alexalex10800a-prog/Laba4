@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Lab5MVC_asp.net.Models.EmployeeDTO_MVC>
 
 @{
-    Layout = null;
+  
 }
 
 <!DOCTYPE html>
@@ -13,18 +13,12 @@
 </head>
 <body>
     <p>
-        @Html.ActionLink("Create New", "Create")
+        @Html.ActionLink("Создать", "Create")
     </p>
     <table class="table">
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.FullName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SpecialtyCode)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DepartmentCode)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.DepartmentName)
@@ -41,21 +35,14 @@
                 @Html.DisplayFor(modelItem => item.FullName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.SpecialtyCode)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DepartmentCode)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.DepartmentName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.SpecialtyName)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
-                @Html.ActionLink("Details", "Details", new { id=item.ID }) |
-                @Html.ActionLink("Delete", "Delete", new { id=item.ID })
+                @Html.ActionLink("Изменить", "Edit", new { id=item.ID }) |
+                @Html.ActionLink("Удалить", "Delete", new { id=item.ID })
             </td>
         </tr>
     }

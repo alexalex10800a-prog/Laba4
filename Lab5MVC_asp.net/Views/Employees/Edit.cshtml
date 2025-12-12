@@ -1,0 +1,11 @@
+﻿@model Lab5MVC_asp.net.Models.EmployeeDTO_MVC
+@{
+    ViewBag.Title = "Изменить данные сотрудника";
+    ViewBag.ButtonTitle = "Изменить";
+
+}
+@Html.Partial("_EmpForm", Model)
+
+<div>
+    @Html.ActionLink("Список сотрудников", "Index")
+</div>
