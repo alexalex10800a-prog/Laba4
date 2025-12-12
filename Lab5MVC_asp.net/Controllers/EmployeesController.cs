@@ -18,8 +18,10 @@ namespace Lab5MVC_asp.net.Controllers
         }
         public ActionResult Index()
         {
-            var items = crudServ.GetAllEmployees();
-            return View("List", items);
+            List<BLL2.models.SpecialtyDTO> slist = crudServ.GetAllSpecialties();
+            List<BLL2.models.DepartmentDTO> dlist = crudServ.GetAllDepartments();
+            var items = crudServ.GetAllEmployees().Select(i => new EmployeeDTO_MVC(i, dlist, slist));
+            return View(items);
         }
 
         [HttpGet]
@@ -41,7 +43,9 @@ namespace Lab5MVC_asp.net.Controllers
         [HttpGet]
         public ActionResult Edit(int id)
         {
-            EmployeeDTO_MVC e = new EmployeeDTO_MVC(crudServ.GetEmployeeById(id));
+            List<BLL2.models.SpecialtyDTO> spec = crudServ.GetAllSpecialties();
+            List<BLL2.models.DepartmentDTO> dep = crudServ.GetAllDepartments();
+            EmployeeDTO_MVC e = new EmployeeDTO_MVC(crudServ.GetEmployeeById(id), dep, spec);
             return View(e);
         }
         [HttpPost]

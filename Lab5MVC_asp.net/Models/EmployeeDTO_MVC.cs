@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using BLL2;
+using BLL2.models;
 
 namespace Lab5MVC_asp.net.Models
 {
@@ -15,14 +16,24 @@ namespace Lab5MVC_asp.net.Models
 
         public string DepartmentName { get; set; }
         public string SpecialtyName { get; set; }
-
+        public List<DepartmentDTO> Department { get; set; }
+        public List<SpecialtyDTO> Specialty { get; set; }
         public EmployeeDTO_MVC() { }
-        public EmployeeDTO_MVC(BLL2.models.EmployeeDTO e)
+
+        public EmployeeDTO_MVC(List<DepartmentDTO> Dep, List<SpecialtyDTO> Sp) {
+            this.Department = Dep;
+            this.Specialty = Sp; 
+        }
+        public EmployeeDTO_MVC(BLL2.models.EmployeeDTO e, List<DepartmentDTO> Dep, List<SpecialtyDTO> Sp)
         {
             FullName = e.FullName;
             SpecialtyCode = e.SpecialtyCode;
             DepartmentCode = e.DepartmentCode;
+            DepartmentName = Dep.Where(i => i.ID == e.DepartmentCode).FirstOrDefault().DepartmentName;
+            SpecialtyName = Sp.Where(i => i.ID == e.SpecialtyCode).FirstOrDefault().SpecialtyName;
             ID = e.ID;
+            this.Department = Dep;
+            this.Specialty = Sp;
         }
     }
 }
