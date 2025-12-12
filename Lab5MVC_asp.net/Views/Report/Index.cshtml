@@ -1,0 +1,20 @@
+﻿@{
+    ViewBag.Title = "Отчеты";
+}
+
+<h2>Отчеты</h2>
+
+<div class="list-group">
+    @Html.ActionLink("Сотрудники с проектами по отделам", "EmployeesByDepartment", "Report",
+            null, new { @class = "list-group-item list-group-item-action" })
+
+    <!-- Можно добавить другие отчеты -->
+    <!--
+    @Html.ActionLink("Другой отчет", "OtherReport", "Report",
+        null, new { @class = "list-group-item list-group-item-action" })
+    -->
+</div>
+
+<div class="mt-3">
+    @Html.ActionLink("На главную", "Index", "Home", null, new { @class = "btn btn-secondary" })
+</div>
